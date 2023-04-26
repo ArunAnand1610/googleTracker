@@ -19,4 +19,16 @@ class LoginController extends GetxController {
         .then((value) => value.docs[0].data());
     return snapshot;
   }
+  Future<String?> getuserRole(String email) async {
+    final usersCollection =
+        FirebaseFirestore.instance.collection('users').withConverter(
+              fromFirestore: (snap, _) => UserModel.fromMap(snap.data()!),
+              toFirestore: (user, _) => user.tojson(),
+            );
+    final snapshot = await usersCollection
+        .where('email', isEqualTo: email)
+        .get()
+        .then((value) => value.docs[0].data());
+    return snapshot.role;
+  }
 }

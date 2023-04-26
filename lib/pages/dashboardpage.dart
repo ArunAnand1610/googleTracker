@@ -103,15 +103,6 @@ class _DashboardPageState extends State<DashboardPage> {
           }),
           debugPrint("the current location is : $value"),
         });
-    FirebaseFirestore.instance
-        .collection("users")
-        .doc(FirebaseAuth.instance.currentUser!.uid)
-        .get()
-        .then((value) {
-      setState(() {
-        name = value.get("role");
-      });
-    });
   }
 
   Future<Position> getUserCurrentLocation() async {
@@ -244,7 +235,6 @@ class _DashboardPageState extends State<DashboardPage> {
   @override
   Widget build(BuildContext context) {
     final Controller = Get.put(ProfileController());
-    
     return SafeArea(
         child: Scaffold(
       drawer: Drawer(
@@ -271,16 +261,27 @@ class _DashboardPageState extends State<DashboardPage> {
                       size: 28,
                     )),
                 Padding(
-                  padding: EdgeInsets.only(left: 56.0),
-                  child: Text(
-                    "Hii ${name}",
-                    style: TextStyle(
-                        fontFamily: "Gortita",
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white),
-                  ),
-                )
+                    padding: EdgeInsets.only(left: 56.0),
+                    child: FutureBuilder(
+                        future: Controller.getuserName(),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.done) {
+                            if (snapshot.hasData) {
+                              String user = snapshot.data as String;
+                              name = user;
+                              return Text(
+                                "Hii ${user}",
+                                style: const TextStyle(
+                                    fontFamily: "Gortita",
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white),
+                              );
+                            }
+                          }
+                          return Container();
+                        }))
               ],
             ),
           ),
@@ -292,10 +293,9 @@ class _DashboardPageState extends State<DashboardPage> {
         width: MediaQuery.of(context).size.width,
         child: Column(
           children: [
-           
             /////////////....................... Ambulance...............////////
             Visibility(
-              visible: name=="police",
+              visible: name == "Doctor",
               child: Card(
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12)),
@@ -319,86 +319,90 @@ class _DashboardPageState extends State<DashboardPage> {
 //...................................User......................//
 
 //....................................Police....................//
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                      "${accidentlists.length} Accidents near under your circle"),
-                ),
-                SizedBox(
-                  height: 200,
-                  child: kInitialPosition != null
-                      ? GoogleMap(
-                          onMapCreated: onMapCreated,
-                          // mapToolbarEnabled: true,
-                          initialCameraPosition: kInitialPosition!,
-                          onTap: (LatLng pos) {
-                            print("the tapped : $pos");
-                          },
-                          mapType: MapType.normal,
-                          polylines: Set<Polyline>.of(polylines.values),
-                          onLongPress: (LatLng pos) {
-                            setState(() {
-                              // _lastLongPress = pos;
-                            });
-                          },
-                          buildingsEnabled: true,
-                          trafficEnabled: true,
-                          zoomControlsEnabled: false,
-                          myLocationButtonEnabled: false,
-                          myLocationEnabled: true,
-                          markers: markers,
-                        )
-                      : Center(
-                          child: CircularProgressIndicator(),
-                        ),
-                ),
-                SizedBox(
-                  height: MediaQuery.of(context).size.height / 1.8,
-                  child: ListView.builder(
-                      itemCount: accidentlists.length,
-                      shrinkWrap: true,
-                      itemBuilder: (c, i) {
-                        return Padding(
-                          padding: const EdgeInsets.all(10.0),
-                          child: GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                accidentlatitude = double.parse(accidentlists[i]
-                                        ["spot-latitude"]
-                                    .toString());
-                                accidentlongitude = double.parse(
-                                    accidentlists[i]["spot-longitude"]
-                                        .toString());
-                              });
-                              _getLocation(
-                                  LatLng(accidentlatitude, accidentlongitude));
+            Visibility(
+              visible: name == "Police",
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                        "${accidentlists.length} Accidents near under your circle"),
+                  ),
+                  SizedBox(
+                    height: 200,
+                    child: kInitialPosition != null
+                        ? GoogleMap(
+                            onMapCreated: onMapCreated,
+                            // mapToolbarEnabled: true,
+                            initialCameraPosition: kInitialPosition!,
+                            onTap: (LatLng pos) {
+                              print("the tapped : $pos");
                             },
-                            child: Card(
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12)),
-                              child: Padding(
-                                padding: const EdgeInsets.all(16.0),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text("Name ${accidentlists[i]["name"]}"),
-                                    Text("mail ${accidentlists[i]["mail"]}"),
-                                    Text(
-                                        "Mobile ${accidentlists[i]["mobile"]}"),
-                                    Text(
-                                        "Emergency contact ${accidentlists[i]["Emergency contact"]}")
-                                  ],
+                            mapType: MapType.normal,
+                            polylines: Set<Polyline>.of(polylines.values),
+                            onLongPress: (LatLng pos) {
+                              setState(() {
+                                // _lastLongPress = pos;
+                              });
+                            },
+                            buildingsEnabled: true,
+                            trafficEnabled: true,
+                            zoomControlsEnabled: false,
+                            myLocationButtonEnabled: false,
+                            myLocationEnabled: true,
+                            markers: markers,
+                          )
+                        : Center(
+                            child: CircularProgressIndicator(),
+                          ),
+                  ),
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height / 1.8,
+                    child: ListView.builder(
+                        itemCount: accidentlists.length,
+                        shrinkWrap: true,
+                        itemBuilder: (c, i) {
+                          return Padding(
+                            padding: const EdgeInsets.all(10.0),
+                            child: GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  accidentlatitude = double.parse(
+                                      accidentlists[i]["spot-latitude"]
+                                          .toString());
+                                  accidentlongitude = double.parse(
+                                      accidentlists[i]["spot-longitude"]
+                                          .toString());
+                                });
+                                _getLocation(LatLng(
+                                    accidentlatitude, accidentlongitude));
+                              },
+                              child: Card(
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12)),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(16.0),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text("Name ${accidentlists[i]["name"]}"),
+                                      Text("mail ${accidentlists[i]["mail"]}"),
+                                      Text(
+                                          "Mobile ${accidentlists[i]["mobile"]}"),
+                                      Text(
+                                          "Emergency contact ${accidentlists[i]["Emergency contact"]}")
+                                    ],
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                        );
-                      }),
-                )
-              ],
+                          );
+                        }),
+                  )
+                ],
+              ),
             ),
           ],
         ),
