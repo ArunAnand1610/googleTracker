@@ -5,7 +5,9 @@ import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:googletracking_project/model/usermodel.dart';
+import 'package:googletracking_project/pages/dashboardpage.dart';
 import 'package:googletracking_project/styles/registerstyle.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:nb_utils/nb_utils.dart';
@@ -86,18 +88,17 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
         final passWord = password.text.trim();
 
         final foundedUser = await usersCollection
-            .where('username', isEqualTo: email)
+            .where('email', isEqualTo: email)
             .get()
             .then((value) => value.docs[0].data());
-        //email = foundedUser.email;
+        final emails = foundedUser.email;
 
         await FirebaseAuth.instance.signInWithEmailAndPassword(
           email: email,
           password: passWord,
         );
-        setState(() {
-          isLoading = false;
-        });
+
+        Get.to(DashboardPage());
       } catch (e) {
         toast('$e');
         debugPrint("Error: $e");

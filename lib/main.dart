@@ -1,7 +1,10 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:googletracking_project/firebase_options.dart';
+import 'package:googletracking_project/pages/dashboardpage.dart';
+import 'package:googletracking_project/pages/loginpage.dart';
 import 'package:googletracking_project/pages/userregister.dart';
 
 Future<void> main() async {
@@ -24,7 +27,17 @@ class MyApp extends StatelessWidget {
         
         primarySwatch: Colors.blue,
       ),
-      home: RegisterPage(),
+      home: StreamBuilder(
+        stream: FirebaseAuth.instance.authStateChanges(),
+        initialData: FirebaseAuth.instance.currentUser,
+        builder: (context, snap) {
+          final user = snap.data;
+          if (user == null) {
+            return const LoginPage();
+          }
+          return const DashboardPage();
+        },
+      ),
     );
   }
 }
