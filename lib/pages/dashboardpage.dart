@@ -244,6 +244,7 @@ class _DashboardPageState extends State<DashboardPage> {
   @override
   Widget build(BuildContext context) {
     final Controller = Get.put(ProfileController());
+    
     return SafeArea(
         child: Scaffold(
       drawer: Drawer(
@@ -293,111 +294,111 @@ class _DashboardPageState extends State<DashboardPage> {
           children: [
            
             /////////////....................... Ambulance...............////////
-            Card(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12)),
-              child: ListTile(
-                leading: const SizedBox(
-                    height: 30, width: 30, child: Icon(Icons.location_city)),
-                title: Text(
-                  "SearchNear by hospital",
-                  style: GoogleFonts.rubik(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w500,
-                    color: const Color(0xff000000),
+            Visibility(
+              visible: name=="police",
+              child: Card(
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12)),
+                child: ListTile(
+                  leading: const SizedBox(
+                      height: 30, width: 30, child: Icon(Icons.location_city)),
+                  title: Text(
+                    "SearchNear by hospital",
+                    style: GoogleFonts.rubik(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                      color: const Color(0xff000000),
+                    ),
                   ),
+                  onTap: () {
+                    Get.to(SearchPlacesScreen());
+                  },
                 ),
-                onTap: () {
-                  Get.to(SearchPlacesScreen());
-                },
               ),
             ),
 //...................................User......................//
 
 //....................................Police....................//
-            Visibility(
-              visible: name=="Police",
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                        "${accidentlists.length} Accidents near under your circle"),
-                  ),
-                  SizedBox(
-                    height: 200,
-                    child: kInitialPosition != null
-                        ? GoogleMap(
-                            onMapCreated: onMapCreated,
-                            // mapToolbarEnabled: true,
-                            initialCameraPosition: kInitialPosition!,
-                            onTap: (LatLng pos) {
-                              print("the tapped : $pos");
-                            },
-                            mapType: MapType.normal,
-                            polylines: Set<Polyline>.of(polylines.values),
-                            onLongPress: (LatLng pos) {
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                      "${accidentlists.length} Accidents near under your circle"),
+                ),
+                SizedBox(
+                  height: 200,
+                  child: kInitialPosition != null
+                      ? GoogleMap(
+                          onMapCreated: onMapCreated,
+                          // mapToolbarEnabled: true,
+                          initialCameraPosition: kInitialPosition!,
+                          onTap: (LatLng pos) {
+                            print("the tapped : $pos");
+                          },
+                          mapType: MapType.normal,
+                          polylines: Set<Polyline>.of(polylines.values),
+                          onLongPress: (LatLng pos) {
+                            setState(() {
+                              // _lastLongPress = pos;
+                            });
+                          },
+                          buildingsEnabled: true,
+                          trafficEnabled: true,
+                          zoomControlsEnabled: false,
+                          myLocationButtonEnabled: false,
+                          myLocationEnabled: true,
+                          markers: markers,
+                        )
+                      : Center(
+                          child: CircularProgressIndicator(),
+                        ),
+                ),
+                SizedBox(
+                  height: MediaQuery.of(context).size.height / 1.8,
+                  child: ListView.builder(
+                      itemCount: accidentlists.length,
+                      shrinkWrap: true,
+                      itemBuilder: (c, i) {
+                        return Padding(
+                          padding: const EdgeInsets.all(10.0),
+                          child: GestureDetector(
+                            onTap: () {
                               setState(() {
-                                // _lastLongPress = pos;
+                                accidentlatitude = double.parse(accidentlists[i]
+                                        ["spot-latitude"]
+                                    .toString());
+                                accidentlongitude = double.parse(
+                                    accidentlists[i]["spot-longitude"]
+                                        .toString());
                               });
+                              _getLocation(
+                                  LatLng(accidentlatitude, accidentlongitude));
                             },
-                            buildingsEnabled: true,
-                            trafficEnabled: true,
-                            zoomControlsEnabled: false,
-                            myLocationButtonEnabled: false,
-                            myLocationEnabled: true,
-                            markers: markers,
-                          )
-                        : Center(
-                            child: CircularProgressIndicator(),
-                          ),
-                  ),
-                  SizedBox(
-                    height: MediaQuery.of(context).size.height / 1.8,
-                    child: ListView.builder(
-                        itemCount: accidentlists.length,
-                        shrinkWrap: true,
-                        itemBuilder: (c, i) {
-                          return Padding(
-                            padding: const EdgeInsets.all(10.0),
-                            child: GestureDetector(
-                              onTap: () {
-                                setState(() {
-                                  accidentlatitude = double.parse(accidentlists[i]
-                                          ["spot-latitude"]
-                                      .toString());
-                                  accidentlongitude = double.parse(
-                                      accidentlists[i]["spot-longitude"]
-                                          .toString());
-                                });
-                                _getLocation(
-                                    LatLng(accidentlatitude, accidentlongitude));
-                              },
-                              child: Card(
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12)),
-                                child: Padding(
-                                  padding: const EdgeInsets.all(16.0),
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text("Name ${accidentlists[i]["name"]}"),
-                                      Text("mail ${accidentlists[i]["mail"]}"),
-                                      Text(
-                                          "Mobile ${accidentlists[i]["mobile"]}"),
-                                      Text(
-                                          "Emergency contact ${accidentlists[i]["Emergency contact"]}")
-                                    ],
-                                  ),
+                            child: Card(
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12)),
+                              child: Padding(
+                                padding: const EdgeInsets.all(16.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text("Name ${accidentlists[i]["name"]}"),
+                                    Text("mail ${accidentlists[i]["mail"]}"),
+                                    Text(
+                                        "Mobile ${accidentlists[i]["mobile"]}"),
+                                    Text(
+                                        "Emergency contact ${accidentlists[i]["Emergency contact"]}")
+                                  ],
                                 ),
                               ),
                             ),
-                          );
-                        }),
-                  )
-                ],
-              ),
+                          ),
+                        );
+                      }),
+                )
+              ],
             ),
           ],
         ),
