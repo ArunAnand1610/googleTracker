@@ -26,7 +26,7 @@ class _RegisterPageState extends State<RegisterPage>
   final FocusNode focusNode3 = FocusNode();
   final FocusNode focusNode4 = FocusNode();
   final FocusNode focusNode5 = FocusNode();
-  List<String> items = ['Police', 'Ambulance', 'Hospital', "Doctor"];
+  List<String> items = ['Police', 'Ambulance', 'User', "Doctor"];
   String? selectedItem ;
   final controller = Get.put(SignUpController());
   final _formKey1 = GlobalKey<FormState>();
@@ -349,17 +349,15 @@ class _RegisterPageState extends State<RegisterPage>
                             hintStyle: TextStyle(
                                 fontSize: 13,
                                 fontFamily: "Gordita",
-                                fontWeight: focusNode2.hasFocus
+                                fontWeight: focusNode3.hasFocus
                                     ? FontWeight.w500
                                     : FontWeight.normal,
-                                color: focusNode2.hasFocus
+                                color: focusNode3.hasFocus
                                     ? Color(0xFF00c19d)
                                     : Color(0xFFd4d4d4)),
                             suffixIcon: IconButton(
                                 onPressed: (() {
-                                  setState(() {
-                                    hide = !hide;
-                                  });
+                                 
                                 }),
                                 icon: Icon(Icons.phone)),
                           ),
@@ -425,10 +423,10 @@ class _RegisterPageState extends State<RegisterPage>
                             hintStyle: TextStyle(
                                 fontSize: 13,
                                 fontFamily: "Gordita",
-                                fontWeight: focusNode2.hasFocus
+                                fontWeight: focusNode4.hasFocus
                                     ? FontWeight.w500
                                     : FontWeight.normal,
-                                color: focusNode2.hasFocus
+                                color: focusNode4.hasFocus
                                     ? Color(0xFF00c19d)
                                     : Color(0xFFd4d4d4)),
                             suffixIcon: IconButton(

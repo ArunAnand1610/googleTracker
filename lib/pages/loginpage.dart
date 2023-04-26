@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:googletracking_project/model/usermodel.dart';
 import 'package:googletracking_project/pages/dashboardpage.dart';
+import 'package:googletracking_project/pages/userregister.dart';
 import 'package:googletracking_project/styles/registerstyle.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:nb_utils/nb_utils.dart';
@@ -97,7 +98,7 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
           email: email,
           password: passWord,
         );
-
+     
         Get.to(DashboardPage());
       } catch (e) {
         toast('$e');
@@ -339,11 +340,9 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
                 ),
                 TextButton(
                     onPressed: () {
-                      setState(() {
-                        isLogin = !isLogin;
-                      });
+                      Get.to(RegisterPage());
                     },
-                    child: Text(isLogin ? "Register" : "Login")),
+                    child: Text("Register")),
                 SizedBox(
                   height: focusNode1.hasFocus ? 16 : 0,
                 )
